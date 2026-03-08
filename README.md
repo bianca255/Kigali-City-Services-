@@ -153,12 +153,6 @@ Hospital · Police Station · Library · Restaurant · Café · Park · Tourist 
 
 ---
 
-## Screenshots
-
-> *(Add screenshots here after building)*
-
----
-
 ## License
 
 MIT
