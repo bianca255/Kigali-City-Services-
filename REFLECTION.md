@@ -110,20 +110,10 @@ Additionally, the initial rules did not properly verify user ownership before al
    firebase deploy --only firestore:rules
    ```
 
-3. **Tested permissions in Firestore Console** using the Rules Simulator with different user UIDs
-
-4. **Added client-side validation** in `ListingService` to ensure `createdBy` field is always set:
-   ```dart
-   Future<void> createListing(ListingModel listing) async {
-     if (listing.createdBy.isEmpty) {
-       throw 'User must be authenticated to create listings';
-     }
-     await _firestore.collection('listings').add(listing.toFirestore());
-   }
-   ```
+3. **Tested permissions in Firestore Console** using the Rules Simulator with different user UIDs to verify proper access control
 
 ### Lesson Learned
-Security rules must be carefully designed to balance data protection with user functionality. Always test rules with the Firebase Console simulator before deployment, and ensure client-side code properly sets authorization fields (like `createdBy`) that security rules depend on.
+Security rules are the primary defense mechanism in Firebase applications. Server-side Firestore rules provide robust protection that cannot be bypassed by client-side code. Always test rules with the Firebase Console simulator before deployment to ensure they properly enforce access control while allowing legitimate operations.
 
 ---
 
