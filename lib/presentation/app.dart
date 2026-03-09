@@ -66,9 +66,7 @@ class _AuthGate extends ConsumerWidget {
           error: (_, __) => const LoginScreen(),
           data: (profile) {
             if (profile == null) return const LoginScreen();
-            if (!profile.emailVerified) {
-              return const EmailVerificationScreen();
-            }
+            if (!profile.emailVerified) return const EmailVerificationScreen();
             return const _MainScaffold();
           },
         );

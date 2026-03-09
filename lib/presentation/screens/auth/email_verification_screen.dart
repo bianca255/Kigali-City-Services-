@@ -57,7 +57,7 @@ class _EmailVerificationScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('✅ Verification email sent! Check spam folder if not received.'),
-            backgroundColor: AppColors.success,
+            backgroundColor: Colors.green,
             duration: Duration(seconds: 5),
           ),
         );
@@ -72,7 +72,7 @@ class _EmailVerificationScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('❌ Error sending email: ${e.toString()}'),
-            backgroundColor: AppColors.error,
+            backgroundColor: Colors.red,
             duration: const Duration(seconds: 6),
           ),
         );
