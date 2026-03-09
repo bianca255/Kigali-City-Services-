@@ -147,6 +147,7 @@ class SettingsScreen extends ConsumerWidget {
   void _signOut(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         title: const Text('Sign Out'),
         content:
@@ -160,8 +161,47 @@ class SettingsScreen extends ConsumerWidget {
                 backgroundColor: AppColors.error,
                 foregroundColor: Colors.white),
             onPressed: () async {
-              Navigator.pop(ctx);
-              await ref.read(userProfileProvider.notifier).signOut();
+              try {
+                // Show loading
+                Navigator.pop(ctx);
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => const Center(
+                    child: Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 16),
+                            Text('Signing out...'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+                
+                // Sign out
+                await ref.read(userProfileProvider.notifier).signOut();
+                
+                // Close loading dialog
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error signing out: ${e.toString()}'),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
+              }
             },
             child: const Text(AppStrings.signOut),
           ),
