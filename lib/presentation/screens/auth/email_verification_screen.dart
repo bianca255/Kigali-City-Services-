@@ -50,16 +50,34 @@ class _EmailVerificationScreenState
       _resending = true;
       _cooldown = 60;
     });
-    await ref.read(userProfileProvider.notifier).resendVerification();
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Verification email resent!')),
-      );
-      setState(() => _resending = false);
-      _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (t) {
-        setState(() => _cooldown--);
-        if (_cooldown <= 0) t.cancel();
-      });
+    
+    try {
+      await ref.read(userProfileProvider.notifier).resendVerification();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Verification email sent! Check spam folder if not received.'),
+            backgroundColor: AppColors.success,
+            duration: Duration(seconds: 5),
+          ),
+        );
+        setState(() => _resending = false);
+        _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (t) {
+          setState(() => _cooldown--);
+          if (_cooldown <= 0) t.cancel();
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Error sending email: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+            duration: const Duration(seconds: 6),
+          ),
+        );
+        setState(() => _resending = false);
+      }
     }
   }
 
@@ -119,7 +137,27 @@ class _EmailVerificationScreenState
                 style: TextStyle(
                     fontSize: 13, color: AppColors.textSecondary, height: 1.5),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.info_outline, color: Colors.orange, size: 20),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '💡 Check your spam/junk folder if email not received',
+                        style: TextStyle(fontSize: 12, color: AppColors.textPrimary),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 height: 52,

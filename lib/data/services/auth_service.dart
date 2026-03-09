@@ -21,7 +21,15 @@ class AuthService {
     );
     final user = credential.user!;
     await user.updateDisplayName(displayName);
-    await user.sendEmailVerification();
+    
+    // Send verification email with error handling
+    try {
+      await user.sendEmailVerification();
+      print('✅ Verification email sent to $email');
+    } catch (e) {
+      print('⚠️ Failed to send verification email: $e');
+      // Continue signup even if email fails
+    }
 
     final userModel = UserModel(
       uid: user.uid,
@@ -75,8 +83,15 @@ class AuthService {
   Future<void> sendPasswordResetEmail(String email) async =>
       _auth.sendPasswordResetEmail(email: email);
 
-  Future<void> sendVerificationEmail() async =>
-      _auth.currentUser?.sendEmailVerification();
+  Future<void> sendVerificationEmail() async {
+    try {
+      await _auth.currentUser?.sendEmailVerification();
+      print('✅ Verification email resent to ${_auth.currentUser?.email}');
+    } catch (e) {
+      print('⚠️ Failed to resend verification email: $e');
+      rethrow; // Re-throw so UI can show error
+    }
+  }
 
   Future<bool> reloadAndCheckVerification() async {
     await _auth.currentUser?.reload();
